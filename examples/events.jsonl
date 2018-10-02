@@ -1,0 +1,9 @@
+{"vendor":"langchain","lc_run_id":"run-alpha","event_type":"llm","name":"draft_answer","time":"2026-01-10T09:00:00Z","latency_ms":820,"level":"info","feedback_score":0.91,"prompt_tokens":540,"completion_tokens":180,"metadata":{"model":"gpt-x"}}
+{"vendor":"langchain","lc_run_id":"run-alpha","event_type":"tool","name":"web_search","time":"2026-01-10T09:00:01Z","latency_ms":310,"level":"info","completion_tokens":0,"prompt_tokens":0}
+{"span_kind":"retrieval","trace_id":"run-alpha","name":"vector_lookup","start_time":"2026-01-10T09:00:02Z","end_time":"2026-01-10T09:00:02.140Z","status":"ok","attributes":{"quality":0.77,"tokens.input":32,"top_k":5}}
+{"vendor":"langchain","lc_run_id":"run-alpha","event_type":"llm","name":"finalize_answer","time":"2026-01-10T09:00:03Z","latency_ms":990,"level":"warning","feedback_score":0.68,"prompt_tokens":720,"completion_tokens":240}
+{"invocation_type":"tool","tool_name":"calculator","run_id":"run-beta","timestamp":1736499600,"duration_ms":45,"outcome":"success","score":1.0,"input_tokens":8,"output_tokens":4,"meta":{"expr":"2+2"}}
+{"invocation_type":"llm","tool_name":"planner","run_id":"run-beta","timestamp":1736499601,"duration_ms":1340,"outcome":"success","score":0.83,"input_tokens":410,"output_tokens":95}
+{"invocation_type":"tool","tool_name":"file_write","run_id":"run-beta","timestamp":1736499603,"duration_ms":210,"outcome":"failure","input_tokens":0,"output_tokens":0,"meta":{"path":"out.txt"}}
+{"session":"run-gamma","category":"invocation","graph_node":"intake","emitted_at":"2026-01-10T10:15:00Z","elapsed_ms":120,"state":"ok","confidence":0.95,"tokens":{"in":60,"out":40}}
+{"session":"run-gamma","category":"retrieval","graph_node":"context_fetch","emitted_at":"2026-01-10T10:15:01Z","elapsed_ms":540,"state":"ok","confidence":0.72,"tokens":{"in":15,"out":0}}
