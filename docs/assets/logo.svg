@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="swLogoTitle swLogoDesc">
+  <title id="swLogoTitle">SignalWeave: many vendor threads woven into one fabric</title>
+  <desc id="swLogoDesc">Three indigo warp threads run left to right and three amber weft threads run top to bottom, interlacing over a dark panel. They meet at a single bright junction at the centre, standing for heterogeneous telemetry events normalized onto one canonical signal.</desc>
+  <rect x="0" y="0" width="240" height="240" rx="20" fill="#141824"/>
+
+  <!-- warp: incoming vendor event streams (indigo) -->
+  <g fill="none" stroke="#5b8def" stroke-width="6" stroke-linecap="round">
+    <path d="M32 74 C 100 50, 140 50, 208 74"/>
+    <path d="M32 120 C 100 96, 140 96, 208 120"/>
