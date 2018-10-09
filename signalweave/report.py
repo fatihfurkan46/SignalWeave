@@ -56,22 +56,3 @@ def _render_text(group: RunGroup) -> str:
 
     for run in group.runs:
         lines.append(
-            f"  {_clip(run.run_id, 18):<18} {run.signal_count:>4} "
-            f"{run.error_count:>4} {run.reliability:>7.2f} "
-            f"{_fmt_quality(run.quality_mean):>6} "
-            f"{run.p50_duration_ms:>6} {run.p95_duration_ms:>6}"
-        )
-
-    lines.append("-" * 64)
-    lines.append("  kind distribution (fabric):")
-    dist = _kind_distribution(group.runs)
-    for kind in sorted(dist):
-        lines.append(f"    {kind:<14} {dist[kind]:>5}")
-    lines.append("=" * 64)
-    return "\n".join(lines) + "\n"
-
-
-def _clip(text: str, width: int) -> str:
-    return text if len(text) <= width else text[: width - 1] + "\u2026"
-
-
