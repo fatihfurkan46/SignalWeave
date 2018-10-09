@@ -25,3 +25,30 @@ class SignalKind(str, enum.Enum):
     LIFECYCLE = "lifecycle"        # run start / end / checkpoint
 
     @classmethod
+    def coerce(cls, value: Any) -> "SignalKind":
+        if isinstance(value, SignalKind):
+            return value
+        text = str(value or "").strip().lower()
+        for member in cls:
+            if member.value == text:
+                return member
+        # Heuristic mapping for common vendor vocabularies.
+        alias = {
+            "llm": cls.INVOCATION,
+            "chat": cls.INVOCATION,
+            "completion": cls.INVOCATION,
+            "generation": cls.INVOCATION,
+            "function": cls.TOOL,
+            "action": cls.TOOL,
+            "search": cls.RETRIEVAL,
+            "lookup": cls.RETRIEVAL,
+            "score": cls.EVALUATION,
+            "eval": cls.EVALUATION,
+            "exception": cls.ERROR,
+            "fault": cls.ERROR,
+            "span": cls.LIFECYCLE,
+            "trace": cls.LIFECYCLE,
+        }
+        return alias.get(text, cls.INVOCATION)
+
+

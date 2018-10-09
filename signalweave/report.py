@@ -36,23 +36,3 @@ def _render_text(group: RunGroup) -> str:
     lines.append("=" * 64)
     lines.append("  SIGNALWEAVE  ·  AI WORKFLOW TELEMETRY FABRIC")
     lines.append("=" * 64)
-    lines.append("")
-    lines.append(
-        f"  runs={group.run_count}  signals={group.signal_count}  "
-        f"tokens_in={group.total_tokens_in}  tokens_out={group.total_tokens_out}"
-    )
-    lines.append(
-        f"  fabric_reliability={group.fabric_reliability:6.2f}  "
-        f"[{_bar(group.fabric_reliability)}]"
-    )
-    q = group.fabric_quality_mean
-    lines.append(f"  fabric_quality   ={_fmt_quality(q)}")
-    lines.append("-" * 64)
-    lines.append(
-        f"  {'RUN':<18} {'SIG':>4} {'ERR':>4} {'REL':>7} {'QUAL':>6} "
-        f"{'P50':>6} {'P95':>6}"
-    )
-    lines.append("-" * 64)
-
-    for run in group.runs:
-        lines.append(
