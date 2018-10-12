@@ -7,12 +7,3 @@ build/
 dist/
 .venv/
 venv/
-
-# Native build artifacts
-engine/*.exe
-engine/*.o
-engine/*.obj
-engine/signal_aggregate
-/signal_aggregate
-
-# Editor / OS
