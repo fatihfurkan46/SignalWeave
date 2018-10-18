@@ -4,3 +4,10 @@
     "trace_id": "run-orbit",
     "span_kind": "invocation",
     "name": "route_intent",
+    "start_time": "2026-02-01T08:00:00Z",
+    "end_time": "2026-02-01T08:00:00.450Z",
+    "status": "ok",
+    "attributes": { "quality": 0.86, "tokens.input": 120, "tokens.output": 30 }
+  },
+  {
+    "source": "otel",
