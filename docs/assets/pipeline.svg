@@ -16,13 +16,3 @@
     <text x="40" y="66">langchain</text>
     <text x="40" y="106">otel</text>
     <text x="40" y="146">graphflow</text>
-    <text x="40" y="186">agentkit</text>
-  </g>
-
-  <!-- canonical rail -->
-  <line x1="190" y1="130" x2="690" y2="130" stroke="#2a3350" stroke-width="6" stroke-linecap="round"/>
-
-  <g font-family="Segoe UI,Arial,sans-serif" font-size="12.5" text-anchor="middle" fill="#f4f6fb">
-    <circle cx="230" cy="130" r="24" fill="#1d2233" stroke="#5b8def" stroke-width="2.5"/>
-    <text x="230" y="176">normalize</text>
-    <circle cx="420" cy="130" r="24" fill="#1d2233" stroke="#5b8def" stroke-width="2.5"/>
