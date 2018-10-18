@@ -2,12 +2,3 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-.eggs/
-build/
-dist/
-.venv/
-venv/
-
-# Native build artifacts
-engine/*.exe
-engine/*.o
