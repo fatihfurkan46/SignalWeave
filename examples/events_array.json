@@ -18,3 +18,10 @@
     "end_time": "2026-02-01T08:00:01.900Z",
     "status": "error",
     "attributes": { "table": "orders" }
+  },
+  {
+    "source": "generic",
+    "run_id": "run-orbit",
+    "kind": "invocation",
+    "name": "summarize",
+    "ts": "2026-02-01T08:00:03Z",
