@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" width="720" height="260" role="img" aria-labelledby="swPipeTitle swPipeDesc">
+  <title id="swPipeTitle">SignalWeave pipeline: mixed vendor events to one report</title>
+  <desc id="swPipeDesc">Four labelled stages left to right. Events from four vendor families (langchain, otel, graphflow, agentkit) enter normalize, which projects them onto one canonical Signal. Aggregate groups signals by run and computes reliability and quality. Report renders a text or JSON summary. A single event dot travels the full path.</desc>
+  <rect x="0" y="0" width="720" height="260" rx="14" fill="#141824"/>
+  <text x="30" y="36" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="700" fill="#f4f6fb">SignalWeave pipeline</text>
+
+  <!-- four incoming vendor streams collapsing into one rail -->
+  <g fill="none" stroke="#5b8def" stroke-width="2.5">
