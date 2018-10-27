@@ -112,3 +112,41 @@ def _reliability(signals: List[Signal]) -> float:
 
     severity_load = sum(s.severity.weight for s in signals)
     severity_penalty = min(60.0, (severity_load / len(signals)) * 8.0)
+
+    durations = [s.duration_ms for s in signals if s.duration_ms > 0]
+    stability_penalty = 0.0
+    if len(durations) >= 2:
+        mean = statistics.fmean(durations)
+        if mean > 0:
+            cv = statistics.pstdev(durations) / mean
+            stability_penalty = min(20.0, cv * 10.0)
+
+    score = 100.0 - severity_penalty - stability_penalty
+    return round(max(0.0, min(100.0, score)), 2)
+
+
+def _summarize_run(run_id: str, signals: List[Signal]) -> RunSummary:
+    kind_counts = Counter(s.kind.value for s in signals)
+    timestamps = [s.ts for s in signals if s.ts > 0]
+    span = (max(timestamps) - min(timestamps)) if len(timestamps) >= 2 else 0
+
+    scored = [s.quality for s in signals if s.quality is not None]
+    quality_mean = round(statistics.fmean(scored), 4) if scored else None
+    quality_min = round(min(scored), 4) if scored else None
+
+    durations = [s.duration_ms for s in signals]
+    error_count = sum(
+        1 for s in signals
+        if s.kind == SignalKind.ERROR or s.severity in (Severity.ERROR, Severity.CRITICAL)
+    )
+
+    return RunSummary(
+        run_id=run_id,
+        signal_count=len(signals),
+        kind_counts=dict(sorted(kind_counts.items())),
+        span_ms=span,
+        total_duration_ms=sum(durations),
+        tokens_in=sum(s.tokens_in for s in signals),
+        tokens_out=sum(s.tokens_out for s in signals),
+        quality_mean=quality_mean,
+        quality_min=quality_min,
