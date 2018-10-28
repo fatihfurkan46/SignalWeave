@@ -17,22 +17,3 @@ import json
 from typing import List
 
 from .aggregate import RunGroup, RunSummary
-
-
-def _bar(value: float, width: int = 20) -> str:
-    """Render a 0..100 value as an ASCII meter."""
-
-    filled = int(round((value / 100.0) * width))
-    filled = max(0, min(width, filled))
-    return "#" * filled + "-" * (width - filled)
-
-
-def _fmt_quality(value) -> str:
-    return f"{value:.3f}" if value is not None else "  -  "
-
-
-def _render_text(group: RunGroup) -> str:
-    lines: List[str] = []
-    lines.append("=" * 64)
-    lines.append("  SIGNALWEAVE  ·  AI WORKFLOW TELEMETRY FABRIC")
-    lines.append("=" * 64)
