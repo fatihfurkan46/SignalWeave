@@ -5,19 +5,3 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "signalweave"
 version = "0.4.0"
-description = "AI workflow telemetry fabric — normalize framework events, aggregate quality and reliability, weave portable summaries."
-readme = "README.md"
-requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
-authors = [{ name = "SignalWeave Maintainers" }]
-keywords = ["telemetry", "observability", "ai", "llm", "reliability", "signals"]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
-  "Programming Language :: Python :: 3.11",
-  "Topic :: Software Development :: Libraries",
-  "Topic :: System :: Monitoring",
-]
-
-[project.scripts]
