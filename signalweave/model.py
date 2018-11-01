@@ -52,3 +52,30 @@ class SignalKind(str, enum.Enum):
         return alias.get(text, cls.INVOCATION)
 
 
+class Severity(str, enum.Enum):
+    """Ordered severity ladder used for reliability scoring."""
+
+    OK = "ok"
+    NOTICE = "notice"
+    WARN = "warn"
+    ERROR = "error"
+    CRITICAL = "critical"
+
+    @property
+    def weight(self) -> int:
+        return {"ok": 0, "notice": 1, "warn": 3, "error": 7, "critical": 12}[self.value]
+
+    @classmethod
+    def coerce(cls, value: Any) -> "Severity":
+        if isinstance(value, Severity):
+            return value
+        text = str(value or "ok").strip().lower()
+        for member in cls:
+            if member.value == text:
+                return member
+        alias = {
+            "info": cls.NOTICE,
+            "debug": cls.OK,
+            "warning": cls.WARN,
+            "err": cls.ERROR,
+            "fatal": cls.CRITICAL,
