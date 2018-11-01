@@ -7,12 +7,3 @@
 
   <!-- four incoming vendor streams collapsing into one rail -->
   <g fill="none" stroke="#5b8def" stroke-width="2.5">
-    <path d="M40 70  C 110 70, 130 130, 190 130"/>
-    <path d="M40 110 C 110 110, 140 130, 190 130"/>
-    <path d="M40 150 C 110 150, 140 130, 190 130"/>
-    <path d="M40 190 C 110 190, 130 130, 190 130"/>
-  </g>
-  <g font-family="Consolas,monospace" font-size="11" fill="#9fb3d8">
-    <text x="40" y="66">langchain</text>
-    <text x="40" y="106">otel</text>
-    <text x="40" y="146">graphflow</text>
