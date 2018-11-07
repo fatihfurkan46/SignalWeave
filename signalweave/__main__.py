@@ -1,2 +1,1 @@
 """Enable ``python -m signalweave``."""
-
