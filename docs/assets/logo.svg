@@ -8,13 +8,3 @@
   <g fill="none" stroke="#5b8def" stroke-width="6" stroke-linecap="round">
     <path d="M32 74 C 100 50, 140 50, 208 74"/>
     <path d="M32 120 C 100 96, 140 96, 208 120"/>
-    <path d="M32 166 C 100 142, 140 142, 208 166"/>
-  </g>
-
-  <!-- weft: the fabric that binds them (amber) -->
-  <g fill="none" stroke="#e8a33d" stroke-width="6" stroke-linecap="round">
-    <path d="M74 32 C 50 100, 50 140, 74 208"/>
-    <path d="M120 32 C 96 100, 96 140, 120 208"/>
-    <path d="M166 32 C 142 100, 142 140, 166 208"/>
-  </g>
-
