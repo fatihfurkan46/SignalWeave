@@ -2,3 +2,22 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Native build artifacts
+engine/*.exe
+engine/*.o
+engine/*.obj
+engine/signal_aggregate
+/signal_aggregate
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
