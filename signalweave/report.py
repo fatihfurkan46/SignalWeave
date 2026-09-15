@@ -17,3 +17,81 @@ import json
 from typing import List
 
 from .aggregate import RunGroup, RunSummary
+
+
+def _bar(value: float, width: int = 20) -> str:
+    """Render a 0..100 value as an ASCII meter."""
+
+    filled = int(round((value / 100.0) * width))
+    filled = max(0, min(width, filled))
+    return "#" * filled + "-" * (width - filled)
+
+
+def _fmt_quality(value) -> str:
+    return f"{value:.3f}" if value is not None else "  -  "
+
+
+def _render_text(group: RunGroup) -> str:
+    lines: List[str] = []
+    lines.append("=" * 64)
+    lines.append("  SIGNALWEAVE  ·  AI WORKFLOW TELEMETRY FABRIC")
+    lines.append("=" * 64)
+    lines.append("")
+    lines.append(
+        f"  runs={group.run_count}  signals={group.signal_count}  "
+        f"tokens_in={group.total_tokens_in}  tokens_out={group.total_tokens_out}"
+    )
+    lines.append(
+        f"  fabric_reliability={group.fabric_reliability:6.2f}  "
+        f"[{_bar(group.fabric_reliability)}]"
+    )
+    q = group.fabric_quality_mean
+    lines.append(f"  fabric_quality   ={_fmt_quality(q)}")
+    lines.append("-" * 64)
+    lines.append(
+        f"  {'RUN':<18} {'SIG':>4} {'ERR':>4} {'REL':>7} {'QUAL':>6} "
+        f"{'P50':>6} {'P95':>6}"
+    )
+    lines.append("-" * 64)
+
+    for run in group.runs:
+        lines.append(
+            f"  {_clip(run.run_id, 18):<18} {run.signal_count:>4} "
+            f"{run.error_count:>4} {run.reliability:>7.2f} "
+            f"{_fmt_quality(run.quality_mean):>6} "
+            f"{run.p50_duration_ms:>6} {run.p95_duration_ms:>6}"
+        )
+
+    lines.append("-" * 64)
+    lines.append("  kind distribution (fabric):")
+    dist = _kind_distribution(group.runs)
+    for kind in sorted(dist):
+        lines.append(f"    {kind:<14} {dist[kind]:>5}")
+    lines.append("=" * 64)
+    return "\n".join(lines) + "\n"
+
+
+def _clip(text: str, width: int) -> str:
+    return text if len(text) <= width else text[: width - 1] + "\u2026"
+
+
+def _kind_distribution(runs: List[RunSummary]):
+    dist = {}
+    for run in runs:
+        for kind, count in run.kind_counts.items():
+            dist[kind] = dist.get(kind, 0) + count
+    return dist
+
+
+def render_report(group: RunGroup, fmt: str = "text") -> str:
+    """Render an aggregate to the requested format.
+
+    ``fmt`` is one of ``"text"`` or ``"json"``. Any other value raises
+    :class:`ValueError`.
+    """
+
+    if fmt == "json":
+        return json.dumps(group.to_dict(), sort_keys=True, indent=2) + "\n"
+    if fmt == "text":
+        return _render_text(group)
+    raise ValueError(f"unknown report format: {fmt!r}")
