@@ -8,3 +8,24 @@
   <g fill="none" stroke="#5b8def" stroke-width="6" stroke-linecap="round">
     <path d="M32 74 C 100 50, 140 50, 208 74"/>
     <path d="M32 120 C 100 96, 140 96, 208 120"/>
+    <path d="M32 166 C 100 142, 140 142, 208 166"/>
+  </g>
+
+  <!-- weft: the fabric that binds them (amber) -->
+  <g fill="none" stroke="#e8a33d" stroke-width="6" stroke-linecap="round">
+    <path d="M74 32 C 50 100, 50 140, 74 208"/>
+    <path d="M120 32 C 96 100, 96 140, 120 208"/>
+    <path d="M166 32 C 142 100, 142 140, 166 208"/>
+  </g>
+
+  <!-- the one canonical junction -->
+  <circle cx="120" cy="120" r="12" fill="#141824" stroke="#f4f6fb" stroke-width="3"/>
+  <circle cx="120" cy="120" r="5" fill="#f4f6fb">
+    <animate attributeName="r" values="4;6;4" dur="3.2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- one event travelling a warp thread into the junction -->
+  <circle r="5" fill="#e8a33d">
+    <animateMotion dur="4.5s" repeatCount="indefinite" path="M32 120 C 100 96, 140 96, 208 120"/>
+  </circle>
+</svg>
