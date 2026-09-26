@@ -25,3 +25,111 @@ class SignalKind(str, enum.Enum):
     LIFECYCLE = "lifecycle"        # run start / end / checkpoint
 
     @classmethod
+    def coerce(cls, value: Any) -> "SignalKind":
+        if isinstance(value, SignalKind):
+            return value
+        text = str(value or "").strip().lower()
+        for member in cls:
+            if member.value == text:
+                return member
+        # Heuristic mapping for common vendor vocabularies.
+        alias = {
+            "llm": cls.INVOCATION,
+            "chat": cls.INVOCATION,
+            "completion": cls.INVOCATION,
+            "generation": cls.INVOCATION,
+            "function": cls.TOOL,
+            "action": cls.TOOL,
+            "search": cls.RETRIEVAL,
+            "lookup": cls.RETRIEVAL,
+            "score": cls.EVALUATION,
+            "eval": cls.EVALUATION,
+            "exception": cls.ERROR,
+            "fault": cls.ERROR,
+            "span": cls.LIFECYCLE,
+            "trace": cls.LIFECYCLE,
+        }
+        return alias.get(text, cls.INVOCATION)
+
+
+class Severity(str, enum.Enum):
+    """Ordered severity ladder used for reliability scoring."""
+
+    OK = "ok"
+    NOTICE = "notice"
+    WARN = "warn"
+    ERROR = "error"
+    CRITICAL = "critical"
+
+    @property
+    def weight(self) -> int:
+        return {"ok": 0, "notice": 1, "warn": 3, "error": 7, "critical": 12}[self.value]
+
+    @classmethod
+    def coerce(cls, value: Any) -> "Severity":
+        if isinstance(value, Severity):
+            return value
+        text = str(value or "ok").strip().lower()
+        for member in cls:
+            if member.value == text:
+                return member
+        alias = {
+            "info": cls.NOTICE,
+            "debug": cls.OK,
+            "warning": cls.WARN,
+            "err": cls.ERROR,
+            "fatal": cls.CRITICAL,
+            "success": cls.OK,
+            "failure": cls.ERROR,
+        }
+        return alias.get(text, cls.OK)
+
+
+@dataclass(frozen=True)
+class Signal:
+    """A single normalized telemetry point.
+
+    Attributes are intentionally flat so the model serializes to compact,
+    diff-friendly JSON. ``ts`` is an epoch-milliseconds integer to keep
+    ordering deterministic across sources.
+    """
+
+    signal_id: str
+    run_id: str
+    kind: SignalKind
+    name: str
+    ts: int
+    duration_ms: int = 0
+    severity: Severity = Severity.OK
+    quality: Optional[float] = None       # 0.0 .. 1.0 when known
+    tokens_in: int = 0
+    tokens_out: int = 0
+    source: str = "unknown"
+    attributes: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        data = asdict(self)
+        data["kind"] = self.kind.value
+        data["severity"] = self.severity.value
+        return data
+
+    def fingerprint(self) -> str:
+        """Stable content hash, independent of ``signal_id`` assignment."""
+
+        payload = {
+            "run_id": self.run_id,
+            "kind": self.kind.value,
+            "name": self.name,
+            "ts": self.ts,
+            "source": self.source,
+        }
+        blob = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
+
+
+def make_signal_id(run_id: str, name: str, ts: int, ordinal: int) -> str:
+    """Deterministic signal identifier derived from stable inputs."""
+
+    blob = f"{run_id}|{name}|{ts}|{ordinal}"
+    digest = hashlib.sha256(blob.encode("utf-8")).hexdigest()[:12]
+    return f"sig_{digest}"
