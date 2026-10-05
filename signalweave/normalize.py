@@ -109,3 +109,114 @@ def _adapter_graphflow(event: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "run_id": event.get("session") or event.get("run_id") or "run-unknown",
         "kind": event.get("category") or "invocation",
+        "name": event.get("graph_node") or event.get("node_id") or "node",
+        "ts": event.get("emitted_at") or event.get("ts"),
+        "duration_ms": event.get("elapsed_ms", 0),
+        "severity": event.get("state"),
+        "quality": event.get("confidence"),
+        "tokens_in": event.get("tokens", {}).get("in", 0) if isinstance(event.get("tokens"), dict) else 0,
+        "tokens_out": event.get("tokens", {}).get("out", 0) if isinstance(event.get("tokens"), dict) else 0,
+        "attributes": {k: v for k, v in event.items() if k not in _GRAPH_KNOWN},
+    }
+
+
+def _adapter_agentkit(event: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "run_id": event.get("run_id") or "run-unknown",
+        "kind": event.get("invocation_type") or "tool",
+        "name": event.get("tool_name") or event.get("name") or "tool",
+        "ts": event.get("timestamp") or event.get("ts"),
+        "duration_ms": event.get("duration_ms", 0),
+        "severity": event.get("outcome"),
+        "quality": event.get("score"),
+        "tokens_in": event.get("input_tokens", 0),
+        "tokens_out": event.get("output_tokens", 0),
+        "attributes": event.get("meta", {}) or {},
+    }
+
+
+def _adapter_generic(event: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "run_id": event.get("run_id") or event.get("run") or "run-unknown",
+        "kind": event.get("kind") or event.get("type") or "invocation",
+        "name": event.get("name") or event.get("event") or "event",
+        "ts": event.get("ts") or event.get("timestamp") or event.get("time"),
+        "duration_ms": event.get("duration_ms") or event.get("latency_ms") or 0,
+        "severity": event.get("severity") or event.get("level") or event.get("status"),
+        "quality": event.get("quality") or event.get("score"),
+        "tokens_in": event.get("tokens_in", 0),
+        "tokens_out": event.get("tokens_out", 0),
+        "attributes": event.get("attributes", {}) or {},
+    }
+
+
+_GRAPH_KNOWN = {
+    "session", "run_id", "category", "graph_node", "node_id",
+    "emitted_at", "ts", "elapsed_ms", "state", "confidence", "tokens",
+}
+
+_ADAPTERS = {
+    "otel": _adapter_otel,
+    "langchain": _adapter_langchain,
+    "graphflow": _adapter_graphflow,
+    "agentkit": _adapter_agentkit,
+    "generic": _adapter_generic,
+}
+
+
+def _duration(event: Dict[str, Any], attrs: Dict[str, Any]) -> int:
+    if "duration_ms" in event:
+        return int(event["duration_ms"] or 0)
+    start = event.get("start_time")
+    end = event.get("end_time")
+    if start is not None and end is not None:
+        return max(0, _as_int_ms(end) - _as_int_ms(start))
+    return int(attrs.get("duration_ms", 0) or 0)
+
+
+def _coerce_int(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def normalize_event(event: Dict[str, Any], ordinal: int = 0) -> Signal:
+    """Project a single raw event dict onto a canonical :class:`Signal`."""
+
+    source = _detect_source(event)
+    adapter = _ADAPTERS.get(source, _adapter_generic)
+    fields = adapter(event)
+
+    run_id = str(fields["run_id"])
+    name = str(fields["name"])
+    ts = _as_int_ms(fields["ts"])
+    kind = SignalKind.coerce(fields["kind"])
+    severity = Severity.coerce(fields["severity"])
+
+    return Signal(
+        signal_id=make_signal_id(run_id, name, ts, ordinal),
+        run_id=run_id,
+        kind=kind,
+        name=name,
+        ts=ts,
+        duration_ms=_coerce_int(fields.get("duration_ms")),
+        severity=severity,
+        quality=_as_float(fields.get("quality")),
+        tokens_in=_coerce_int(fields.get("tokens_in")),
+        tokens_out=_coerce_int(fields.get("tokens_out")),
+        source=source,
+        attributes=dict(fields.get("attributes") or {}),
+    )
+
+
+def normalize_stream(events: Iterable[Dict[str, Any]]) -> List[Signal]:
+    """Normalize an iterable of raw events into a deterministically ordered list.
+
+    Signals are sorted by ``(ts, run_id, name)`` so identical input always
+    yields identical output regardless of arrival order.
+    """
+
+    signals = [normalize_event(ev, ordinal=i) for i, ev in enumerate(events)]
+    signals.sort(key=lambda s: (s.ts, s.run_id, s.name, s.signal_id))
+    return signals
