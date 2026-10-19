@@ -41,7 +41,12 @@ def _parse_events(text: str) -> List[Dict[str, Any]]:
         data = json.loads(stripped)
         if not isinstance(data, list):
             raise ValueError("top-level JSON must be an array of event objects")
-        return [dict(item) for item in data]
+        events = []
+        for index, item in enumerate(data):
+            if not isinstance(item, dict):
+                raise ValueError(f"events[{index}]: expected an object")
+            events.append(dict(item))
+        return events
     # JSONL
     events: List[Dict[str, Any]] = []
     for lineno, line in enumerate(stripped.splitlines(), start=1):
