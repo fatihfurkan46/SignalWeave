@@ -17,8 +17,9 @@ class ParseEventsTests(unittest.TestCase):
         self.assertEqual(arr, lines)
 
     def test_non_object_line_is_rejected(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as ctx:
             _parse_events("[1, 2]")
+        self.assertIn("events[0]", str(ctx.exception))
         with self.assertRaises(ValueError):
             _parse_events('{"a": 1}\nnot json')
 
