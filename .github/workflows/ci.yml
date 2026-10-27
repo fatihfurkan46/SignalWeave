@@ -10,7 +10,7 @@ jobs:
   python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -25,7 +25,7 @@ jobs:
   engine:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build the native core
         run: c++ -std=c++17 -O2 -Wall -o engine/signal_aggregate engine/signal_aggregate.cpp
       - name: Set up Python 3.11
